@@ -1,26 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Box, Container } from '@material-ui/core'
+import React, { useState } from 'react'
+import { IfFulfilled, IfPending, IfRejected, useAsync } from 'react-async'
+import { getContents } from './api'
+import Breadcrumbs from './components/Breadcrumbs'
+import PageContents from './components/PageContents'
 
 function App() {
+  const [path, setPath] = useState('/')
+  const state = useAsync({ promiseFn: getContents, path, setPath, watch: path })
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Container>
+      <Box p={2}>
+        <Breadcrumbs path={path} setPath={setPath} />
+        <main>
+          <Box py={2}>
+            <IfPending state={state}>Loading...</IfPending>
+            <IfRejected state={state}>{(error) => error.message}</IfRejected>
+            <IfFulfilled state={state}>
+              {(contents) => <PageContents contents={contents} path={path} setPath={setPath} />}
+            </IfFulfilled>
+          </Box>
+        </main>
+      </Box>
+    </Container>
+  )
 }
 
-export default App;
+export default App

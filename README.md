@@ -1,3 +1,10 @@
+Pre-interview project for a breadcrumb file-browser component in React (with TypeScript and Material-UI)
+
+- To change directory strucutre, simply edit `src/directory-structure.json`
+- Name of the root directory (`ROOT_NAME`) can be edited in `src/api.ts`
+
+---
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
