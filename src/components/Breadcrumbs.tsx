@@ -1,4 +1,4 @@
-import { Breadcrumbs as UIBreadcrumbs, Link } from '@material-ui/core'
+import { Breadcrumbs as UIBreadcrumbs, Link, Typography } from '@material-ui/core'
 import NavigateNextIcon from '@material-ui/icons/NavigateNext'
 import React from 'react'
 import { ROOT_NAME } from '../api'
@@ -8,27 +8,27 @@ type Breadcrumb = {
   name: string
   /** Used to update the path when breadcrumb is clicked */
   pathToBreadcrumb: string
+  /** Used to determine whether or not the breadcrumb should be clickable */
+  isFile: boolean
 }
 
 /**
- * Returns an array of Breadcrumb data for each directory in `path`
- * (if current location at end of `path` is a file, `path` will not end in '/' and the function will know to exclude it from the resulting array)
+ * Returns an array of Breadcrumb data for `path`
  */
 function getBreadcrumbs(path: string): Breadcrumb[] {
-  let pathToBreadcrumb = '/'
-  return [
-    { name: ROOT_NAME, pathToBreadcrumb: '/' },
-    ...path
-      .split('/')
-      .slice(1, -1)
-      .map((name) => {
-        pathToBreadcrumb += `${name}/` // the path up to and including the breadcrumb
-        return {
-          name,
-          pathToBreadcrumb,
-        }
-      }),
-  ]
+  const endsInFile = path.charAt(path.length - 1) !== '/'
+  const pathElements = endsInFile ? path.split('/') : path.split('/').slice(0, -1)
+
+  let pathToBreadcrumb = ''
+  return pathElements.map((pathElement, index) => {
+    const isFile = endsInFile && index === pathElements.length - 1
+    pathToBreadcrumb += `${pathElement}${isFile ? '' : '/'}`
+    return {
+      name: pathElement || ROOT_NAME, // if pathElement === '', it's the root directory
+      pathToBreadcrumb,
+      isFile,
+    }
+  })
 }
 
 type Props = {
@@ -39,20 +39,24 @@ type Props = {
 }
 
 /**
- * Displays breadcrumbs for each directory in the `path` location.
- * (if the current location is a file, it is therefore not inclued in the breadcrumbs)
+ * Displays breadcrumbs for each part of the `path` location.
  */
 const Breadcrumbs: React.FC<Props> = ({ path, setPath }) => {
   const pathBreadcrumbs = getBreadcrumbs(path)
 
   return (
     <UIBreadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-      {pathBreadcrumbs.map(({ name, pathToBreadcrumb }) => {
-        return (
+      {pathBreadcrumbs.map(({ name, pathToBreadcrumb, isFile }) => {
+        return isFile ? (
+          <Typography key={pathToBreadcrumb} variant="body2">
+            {name}
+          </Typography>
+        ) : (
           <Link
-            color="textSecondary"
             key={pathToBreadcrumb}
+            color="textSecondary"
             component="button"
+            display="block"
             onClick={() => {
               setPath(pathToBreadcrumb)
             }}

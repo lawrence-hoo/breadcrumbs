@@ -70,6 +70,7 @@ test('renders expected breadcrumbs and page contents while navigating to and fro
   expect(breadcrumbsEl).toContainElement(getByText(ROOT_NAME))
   expect(breadcrumbsEl).toContainElement(getByText('folder'))
   expect(breadcrumbsEl).toContainElement(getByText('subFolder'))
+  expect(breadcrumbsEl).toContainElement(getByText('fileb.txt'))
   expect(mainEl).toHaveTextContent('THIS IS FILE: fileb.txt')
 
   fireEvent.click(getByText('folder'))
@@ -80,5 +81,6 @@ test('renders expected breadcrumbs and page contents while navigating to and fro
   // 'filea.txt' file
   expect(breadcrumbsEl).toContainElement(getByText(ROOT_NAME))
   expect(breadcrumbsEl).toContainElement(getByText('folder'))
+  expect(breadcrumbsEl).toContainElement(getByText('filea.txt'))
   expect(mainEl).toHaveTextContent('THIS IS FILE: filea.txt')
 })
